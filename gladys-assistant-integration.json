@@ -1,0 +1,112 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Gladys Zigbee Alarme",
+  "description": {
+    "en": "Local alarm system using devices already paired with Zigbee2MQTT.",
+    "fr": "Système d'alarme local utilisant les équipements déjà appairés à Zigbee2MQTT."
+  },
+  "version": "0.1.0",
+  "docker_image": "gladys-zigbee-alarme:0.1.0",
+  "gladys_version": ">=5.0.1",
+  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
+  "categories": ["security"],
+  "transports": ["local"],
+  "config_schema": [
+    {
+      "key": "mqtt_section",
+      "type": "section",
+      "label": { "en": "Zigbee2MQTT connection", "fr": "Connexion Zigbee2MQTT" },
+      "description": {
+        "en": "The integration connects directly to the broker and never disarms on connection loss. Open local administration at {{port:alarm_admin}}.",
+        "fr": "L'intégration se connecte directement au broker et ne désarme jamais en cas de perte de connexion. Ouvrez l'administration locale sur {{port:alarm_admin}}."
+      }
+    },
+    {
+      "key": "mqtt_host",
+      "type": "string",
+      "label": { "en": "MQTT host", "fr": "Hôte MQTT" },
+      "required": true
+    },
+    {
+      "key": "mqtt_port",
+      "type": "number",
+      "label": { "en": "MQTT port", "fr": "Port MQTT" },
+      "required": true,
+      "default": 1883,
+      "min": 1,
+      "max": 65535
+    },
+    {
+      "key": "mqtt_prefix",
+      "type": "string",
+      "label": { "en": "Topic prefix", "fr": "Préfixe des sujets" },
+      "required": true,
+      "default": "zigbee2mqtt"
+    },
+    {
+      "key": "mqtt_username",
+      "type": "string",
+      "label": { "en": "MQTT username", "fr": "Utilisateur MQTT" },
+      "required": false
+    },
+    {
+      "key": "mqtt_password",
+      "type": "secret",
+      "label": { "en": "MQTT password", "fr": "Mot de passe MQTT" },
+      "required": false
+    },
+    {
+      "key": "mqtt_tls",
+      "type": "boolean",
+      "label": { "en": "Use TLS", "fr": "Utiliser TLS" },
+      "default": false
+    },
+    {
+      "key": "offline_timeout",
+      "type": "number",
+      "label": {
+        "en": "Default offline delay (seconds)",
+        "fr": "Délai hors ligne par défaut (secondes)"
+      },
+      "default": 3600,
+      "min": 60,
+      "max": 604800
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_mqtt",
+      "label": { "en": "Test MQTT and scan", "fr": "Tester MQTT et découvrir" },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "reset_admin_password",
+      "label": {
+        "en": "Reset admin password",
+        "fr": "Réinitialiser le mot de passe administrateur"
+      },
+      "timeout_seconds": 30
+    }
+  ],
+  "containers": [
+    {
+      "name": "admin",
+      "docker_image": "gladys-zigbee-alarme-admin:0.1.0",
+      "start": "auto",
+      "volumes": ["/data"],
+      "ports": [
+        {
+          "container_port": 3000,
+          "protocol": "tcp",
+          "label": { "en": "Alarm administration", "fr": "Administration de l'alarme" },
+          "name": "alarm_admin",
+          "browsable": true
+        }
+      ],
+      "read_only": true,
+      "memory_mb": 256,
+      "cpu": 1
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "action": "arm_all_zones",
+  "action_code": "1234",
+  "action_transaction": 42,
+  "action_zone": "23",
+  "battery": 91,
+  "voltage": 3010,
+  "battery_low": false,
+  "tamper": false
+}

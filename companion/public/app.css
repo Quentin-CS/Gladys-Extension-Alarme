@@ -1,0 +1,127 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #18202b;
+  background: #f2f5f7;
+}
+body {
+  margin: 0;
+}
+header {
+  background: #25364d;
+  color: white;
+  padding: 1rem clamp(1rem, 5vw, 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+h1 {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  margin: 0;
+}
+main {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+.card {
+  background: white;
+  border-radius: 0.8rem;
+  padding: clamp(1rem, 4vw, 2rem);
+  box-shadow: 0 2px 12px #0001;
+}
+#login {
+  max-width: 26rem;
+  margin: 8vh auto;
+}
+label {
+  display: grid;
+  gap: 0.5rem;
+}
+input,
+button {
+  font: inherit;
+  padding: 0.7rem;
+  border: 1px solid #aab3bd;
+  border-radius: 0.4rem;
+}
+button {
+  cursor: pointer;
+  background: #fff;
+}
+form button {
+  margin-top: 1rem;
+  color: white;
+  background: #1769aa;
+  width: 100%;
+}
+nav {
+  display: flex;
+  gap: 0.5rem;
+  overflow: auto;
+  margin-bottom: 1rem;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th,
+td {
+  padding: 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid #dde2e7;
+}
+.notice {
+  color: #735c00;
+  background: #fff3bf;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+.error {
+  color: #a11919;
+}
+.actions,
+form.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: end;
+  margin: 1rem 0;
+}
+.actions button,
+form.inline button {
+  background: #1769aa;
+  color: white;
+}
+form.inline label {
+  min-width: 10rem;
+  flex: 1;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+.metric {
+  background: #f2f5f7;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+.metric strong {
+  display: block;
+  font-size: 1.4rem;
+}
+.ok {
+  color: #176b37;
+}
+.warning {
+  color: #9a4d00;
+}
+@media (max-width: 600px) {
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+  main {
+    margin-top: 1rem;
+  }
+}

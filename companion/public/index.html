@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gladys Zigbee Alarme</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Gladys Zigbee Alarme</h1>
+      <button id="language">EN</button>
+    </header>
+    <main>
+      <section id="login" class="card">
+        <h2 data-i18n="login">Administration</h2>
+        <form>
+          <label
+            ><span data-i18n="password">Mot de passe</span
+            ><input type="password" autocomplete="current-password" required /></label
+          ><button data-i18n="connect">Se connecter</button>
+          <p class="error"></p>
+        </form>
+      </section>
+      <div id="application" hidden>
+        <nav>
+          <button data-page="overview" data-i18n="overview">Vue d’ensemble</button>
+          <button data-page="devices" data-i18n="devices">Équipements</button>
+          <button data-page="zones" data-i18n="zones">Zones</button>
+          <button data-page="delays" data-i18n="delays">Délais</button>
+          <button data-page="keypads" data-i18n="keypads">Claviers</button>
+          <button data-page="sirens" data-i18n="sirens">Sirènes</button>
+          <button data-page="users" data-i18n="users">Utilisateurs</button>
+          <button data-page="health" data-i18n="health">Santé</button>
+          <button data-page="events" data-i18n="events">Journal</button>
+          <button data-page="maintenance" data-i18n="maintenance">Sauvegarde</button>
+        </nav>
+        <section class="card">
+          <h2 id="page-title"></h2>
+          <div id="content"></div>
+        </section>
+        <p class="notice" data-i18n="httpWarning">
+          HTTP local : le trafic n’est pas chiffré. Utilisez uniquement un réseau local de
+          confiance.
+        </p>
+      </div>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

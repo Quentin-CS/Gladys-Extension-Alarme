@@ -1,0 +1,52 @@
+[
+  {
+    "ieee_address": "0x0015bc0043000001",
+    "friendly_name": "entrance_keypad",
+    "definition": {
+      "model": "KEYZB-110",
+      "vendor": "Develco",
+      "exposes": [
+        { "property": "battery" },
+        { "property": "voltage" },
+        { "property": "battery_low" },
+        { "property": "tamper" },
+        { "property": "action" },
+        { "property": "action_code" },
+        { "property": "action_transaction" },
+        { "property": "action_zone" }
+      ]
+    }
+  },
+  {
+    "ieee_address": "0x0015bc0043000002",
+    "friendly_name": "front_door",
+    "definition": {
+      "model": "WISZB-120",
+      "vendor": "Develco",
+      "exposes": [
+        { "property": "contact" },
+        { "property": "battery" },
+        { "property": "battery_low" },
+        { "property": "tamper" }
+      ]
+    }
+  },
+  {
+    "ieee_address": "0x0015bc0043000003",
+    "friendly_name": "indoor_siren",
+    "definition": {
+      "model": "SIRZB-110",
+      "vendor": "Develco",
+      "exposes": [
+        {
+          "property": "warning",
+          "features": [
+            { "property": "level" },
+            { "property": "strobe" },
+            { "property": "duration" }
+          ]
+        }
+      ]
+    }
+  }
+]
