@@ -1,0 +1,128 @@
+# -----------------------------------------------------------------------------
+# Build and publish the multi-architecture images.
+#
+# A tag pushed by hand produces a release image. A manual run produces a test
+# image tagged with the branch name (or the supplied image-tag), and a call
+# from release.yml publishes the version just prepared by that workflow.
+# Both the main integration and its administration companion are published.
+# -----------------------------------------------------------------------------
+name: Build and publish images
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: 'Image tag to publish (defaults to the branch name)'
+        required: false
+        default: ''
+  workflow_call:
+    inputs:
+      version:
+        description: 'Released version, e.g. 1.2.0 (publishes version + latest)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version != '' && format('v{0}', inputs.version) || '' }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive image tags
+        id: meta
+        env:
+          INPUT_IMAGE_TAG: ${{ inputs.image-tag }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          admin_image="${image}-admin"
+
+          if [ -n "$INPUT_VERSION" ]; then
+            version="$INPUT_VERSION"
+            tags="${image}:${version},${image}:latest"
+            admin_tags="${admin_image}:${version},${admin_image}:latest"
+          elif [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            version="${INPUT_IMAGE_TAG:-${GITHUB_REF_NAME//\//-}}"
+            if [ "$version" = "latest" ]; then
+              echo "::error::Cannot use 'latest' as a manual image tag."
+              exit 1
+            fi
+            tags="${image}:${version}"
+            admin_tags="${admin_image}:${version}"
+          else
+            version="${GITHUB_REF_NAME#v}"
+            tags="${image}:${version},${image}:latest"
+            admin_tags="${admin_image}:${version},${admin_image}:latest"
+          fi
+
+          echo "image_ref=${image}:${version}" >> "$GITHUB_OUTPUT"
+          echo "admin_image_ref=${admin_image}:${version}" >> "$GITHUB_OUTPUT"
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+          echo "admin_tags=$admin_tags" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push main integration (amd64 + arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Build and push administration companion (amd64 + arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: companion/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.admin_tags }}
+
+      - name: Docker build summary
+        env:
+          IMAGE_REF: ${{ steps.meta.outputs.image_ref }}
+          ADMIN_IMAGE_REF: ${{ steps.meta.outputs.admin_image_ref }}
+        run: |
+          set -euo pipefail
+          manifest=$(jq --arg image "$IMAGE_REF" --arg admin_image "$ADMIN_IMAGE_REF" \
+            '.docker_image = $image | .containers |= map(if .name == "admin" then .docker_image = $admin_image else . end)' \
+            gladys-assistant-integration.json)
+          {
+            echo "## Docker build summary"
+            echo
+            echo "Images pushed (linux/amd64 + linux/arm64):"
+            echo
+            echo "- Main: \`$IMAGE_REF\`"
+            echo "- Administration: \`$ADMIN_IMAGE_REF\`"
+            echo
+            echo "### Test this build in Gladys"
+            echo
+            echo "1. In Gladys, open **Integrations → Install an integration → Developer mode**."
+            echo "2. Copy the manifest below (its image references already point to this build):"
+            echo
+            echo '```json'
+            echo "$manifest"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

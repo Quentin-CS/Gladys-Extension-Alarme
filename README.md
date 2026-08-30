@@ -21,3 +21,12 @@ Le manifeste [gladys-assistant-integration.json](gladys-assistant-integration.js
 Documentation : [français](docs/fr.md) · [English](docs/en.md) · [tests matériels](docs/hardware-validation.md).
 
 Licence Apache-2.0.
+
+## Workflows de publication
+
+Les workflows de publication du template sont présents dans `.github/workflows/` :
+
+- `build.yml` construit et publie les images multiarchitecture de l'intégration et du conteneur compagnon (`linux/amd64` et `linux/arm64`). Une exécution manuelle publie un tag de test sans déplacer `latest` ; un tag Git `vX.Y.Z` publie la version et `latest`.
+- `release.yml` est lancé depuis **Actions → Release → Run workflow**. Il applique une montée `patch`, `minor` ou `major`, met à jour `package.json`, `package-lock.json` et les deux références d'image du manifeste, crée le tag Git, puis appelle `build.yml`.
+
+Ces workflows publient dans GitHub Container Registry. Ne lancez pas `Build and publish images` ou `Release` pendant le développement local si aucune publication n'est souhaitée.
